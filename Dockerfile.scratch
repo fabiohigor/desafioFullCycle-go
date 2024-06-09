@@ -1,0 +1,16 @@
+# Etapa de compilação
+FROM golang:1.22.3 AS builder
+
+RUN mkdir /app
+COPY . /app
+WORKDIR /app
+RUN go mod init desafio-golang
+
+# Compila o programa como um binário estático.
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+
+# Etapa final
+FROM scratch
+COPY --from=builder /app/main .
+
+CMD ["./main"]
